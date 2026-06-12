@@ -1,0 +1,17 @@
+name: 펨코 새글 알림
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install requests beautifulsoup4
+      - run: python Fm.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
