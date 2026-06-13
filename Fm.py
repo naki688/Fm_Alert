@@ -29,14 +29,14 @@ def get_posts(user):
     soup = BeautifulSoup(res.text, "html.parser")
     posts = []
     for item in soup.select("ul.bd_lst li"):
-    a = item.select_one("a.hx, h3.title a")
+        a = item.select_one("a.hx, h3.title a")
         if not a:
             continue
         title = a.get_text(strip=True)
         href = a.get("href", "")
         pid = href.split("/")[-1].split("?")[0]
         if title and pid:
-            posts.append({"id": pid, "title": title, "link": "https://www.fmkorea.com" + href})
+            posts.append({"id": pid, "title": title, "link": "https://m.fmkorea.com" + href})
     return posts
 
 seen = load_seen()
