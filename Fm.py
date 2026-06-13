@@ -28,8 +28,8 @@ def get_posts(user):
     res = requests.get(url, headers=headers, timeout=10)
     soup = BeautifulSoup(res.text, "html.parser")
     posts = []
-    for item in soup.select(".li_best2_pic0, .li_best2_pic1"):
-        a = item.select_one("a.hx")
+    for item in soup.select("ul.bd_lst li"):
+    a = item.select_one("a.hx, h3.title a")
         if not a:
             continue
         title = a.get_text(strip=True)
