@@ -23,7 +23,7 @@ def send_telegram(msg):
     requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
 
 def get_posts(user):
-    url = f"https://www.fmkorea.com/index.php?mid=best&search_target=nick_name&search_keyword={user}"
+    url = f"https://m.fmkorea.com/search.php?mid=stock&category=&search_target=nick_name&search_keyword={user}"
     headers = {"User-Agent": "Mozilla/5.0"}
     res = requests.get(url, headers=headers, timeout=10)
     soup = BeautifulSoup(res.text, "html.parser")
