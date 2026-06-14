@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+import hashlib
 import json
 import os
 
@@ -22,38 +22,21 @@ def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
 
-def get_posts(user):
+def get_page_hash(user):
     url = f"https://m.fmkorea.com/search.php?mid=stock&category=&search_target=nick_name&search_keyword={user}"
     headers = {"User-Agent": "Mozilla/5.0"}
     res = requests.get(url, headers=headers, timeout=10)
-    soup = BeautifulSoup(res.text, "html.parser")
-    posts = []
-    for item in soup.select("ul.bd_lst li"):
-        a = item.select_one("a.hx, h3.title a")
-        if not a:
-            continue
-        title = a.get_text(strip=True)
-        href = a.get("href", "")
-        pid = href.split("/")[-1].split("?")[0]
-        if title and pid:
-            posts.append({"id": pid, "title": title, "link": "https://m.fmkorea.com" + href})
-    return posts
-    
-for user in TARGET_USERS:
-    posts = get_posts(user)
-    print(f"{user}: {len(posts)}개 게시글 발견")
-    for p in posts[:3]:
-        print(p)
-
+    return hashlib.md5(res.text.encode()).hexdigest(), url
 
 seen = load_seen()
 for user in TARGET_USERS:
-    posts = get_posts(user)
-    user_seen = seen.get(user, [])
-    for p in posts:
-        if p["id"] not in user_seen:
-            send_telegram(f"📢 펨코 새글\n닉네임: {user}\n제목: {p['title']}\n{p['link']}")
-            user_seen.append(p["id"])
-    seen[user] = user_seen[-50:]
+    new_hash, link = get_page_hash(user)
+    old_hash = seen.get(user)
+    if old_hash and old_hash != new_hash:
+        send_telegram(f"📢 펨코 새글 감지\n닉네임: {user}\n{link}")
+        print(f"{user}: 변화 감지! 알림 전송")
+    else:
+        print(f"{user}: 변화 없음")
+    seen[user] = new_hash
 save_seen(seen)
 print("완료")
