@@ -38,6 +38,13 @@ def get_posts(user):
         if title and pid:
             posts.append({"id": pid, "title": title, "link": "https://m.fmkorea.com" + href})
     return posts
+    
+for user in TARGET_USERS:
+    posts = get_posts(user)
+    print(f"{user}: {len(posts)}개 게시글 발견")
+    for p in posts[:3]:
+        print(p)
+
 
 seen = load_seen()
 for user in TARGET_USERS:
