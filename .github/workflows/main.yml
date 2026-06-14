@@ -1,7 +1,7 @@
 name: 펨코 새글 알림
 on:
   schedule:
-    - - cron: '*/15 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 jobs:
   check:
